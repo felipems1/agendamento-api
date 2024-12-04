@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Motorcycle {
+  id           String        @id @default(uuid())
+  model        String        @unique
+  services     Service[]
+  appointments Appointment[]
+}
+
+model Service {
+  id           String        @id @default(uuid())
+  name         String
+  price        Int
+  motorcycleId String
+  motorcycle   Motorcycle    @relation(fields: [motorcycleId], references: [id])
+  appointments Appointment[]
+}
+
+model Appointment {
+  id              String     @id @default(uuid())
+  customerName    String
+  customerContact String
+  date            DateTime
+  motorcycleId    String
+  serviceId       String
+  motorcycle      Motorcycle @relation(fields: [motorcycleId], references: [id])
+  service         Service    @relation(fields: [serviceId], references: [id])
+}
