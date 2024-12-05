@@ -39,4 +39,25 @@ export class ServiceController {
   async remove(@Param('id') id: string) {
     return this.serviceService.removeService(id);
   }
+
+  @Get('price/:motorcycleId/:serviceId')
+  async getPrice(
+    @Param('motorcycleId') motorcycleId: string,
+    @Param('serviceId') serviceId: string,
+  ) {
+    const price = await this.serviceService.getPriceForServiceAndMotorcycle(
+      motorcycleId,
+      serviceId,
+    );
+
+    return { price };
+  }
+
+  @Get(':motorcycleId/services')
+  async getServicesByMotorcycleId(@Param('motorcycleId') motorcycleId: string) {
+    const services =
+      await this.serviceService.getServicesByMotorcycleId(motorcycleId);
+
+    return services;
+  }
 }

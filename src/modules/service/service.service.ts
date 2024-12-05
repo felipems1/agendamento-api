@@ -71,4 +71,48 @@ export class ServiceService {
       where: { id },
     });
   }
+
+  async getPriceForServiceAndMotorcycle(
+    motorcycleId: string,
+    serviceId: string,
+  ): Promise<number> {
+    const existingMotorcycleId = await this.prismaService.motorcycle.findUnique(
+      {
+        where: { id: motorcycleId },
+      },
+    );
+
+    if (!existingMotorcycleId) {
+      throw new NotFoundException(
+        `Motorcycle with ID ${motorcycleId} not found.`,
+      );
+    }
+
+    const service = await this.prismaService.service.findFirst({
+      where: {
+        motorcycleId: motorcycleId,
+        id: serviceId,
+      },
+    });
+
+    if (!service) {
+      throw new NotFoundException('Service not available for this motorcycle');
+    }
+
+    return service.price;
+  }
+
+  async getServicesByMotorcycleId(motorcycleId: string) {
+    const services = await this.prismaService.service.findMany({
+      where: { motorcycleId },
+    });
+
+    if (services.length === 0) {
+      throw new NotFoundException(
+        'No services found for the selected motorcycle',
+      );
+    }
+
+    return services;
+  }
 }
